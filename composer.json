@@ -1,7 +1,7 @@
 {
   "name": "netlogix/nxmediaproxy",
   "description": "Add a proxy for youtube and vimeo and server preview images from local cdn",
-  "license": "proprietary",
+  "license": "MIT",
   "type": "typo3-cms-extension",
   "version": "1.0.0",
   "require": {
