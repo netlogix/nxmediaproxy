@@ -1,0 +1,33 @@
+youtube_proxy = PAGE
+youtube_proxy {
+  typeNum = 1660637000
+
+  config {
+    cache_period = 900
+    disableAllHeaderCode = 1
+    admPanel = 0
+    removeDefaultJS = 1
+    removeDefaultCss = 1
+    removePageCss = 1
+  }
+
+  10 = USER
+  10.userFunc = Netlogix\Nxmediaproxy\Proxy\ImageProxy->youtube
+}
+
+vimeo_proxy = PAGE
+vimeo_proxy {
+    typeNum = 1660638000
+
+    config {
+        cache_period = 900
+        disableAllHeaderCode = 1
+        admPanel = 0
+        removeDefaultJS = 1
+        removeDefaultCss = 1
+        removePageCss = 1
+    }
+
+    10 = USER
+    10.userFunc = Netlogix\Nxmediaproxy\Proxy\ImageProxy->vimeo
+}

@@ -1,0 +1,23 @@
+{
+  "name": "netlogix/nxmediaproxy",
+  "description": "Add a proxy for youtube and vimeo and server preview images from local cdn",
+  "license": "proprietary",
+  "type": "typo3-cms-extension",
+  "version": "1.0.0",
+  "require": {
+    "typo3/cms-core": "^10.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Netlogix\\Nxmediaproxy\\": "Classes/"
+    }
+  },
+  "replace": {
+    "nxmediaproxy": "self.version"
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "nxmediaproxy"
+    }
+  }
+}
