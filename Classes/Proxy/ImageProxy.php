@@ -28,22 +28,22 @@ class ImageProxy
     public function youtube()
     {
         $queryParams = $this->request->getQueryParams();
-        if (!array_key_exists('id', $queryParams)) {
+        if (!array_key_exists('video-id', $queryParams) && !array_key_exists('id', $queryParams)) {
             exit;
         }
 
-        $id = $queryParams['id'];
+        $id = $queryParams['video-id'] ?? $queryParams['id'];
         $this->redirectToThumbnail("https://youtu.be/{$id}");
     }
 
     public function vimeo()
     {
         $queryParams = $this->request->getQueryParams();
-        if (!array_key_exists('id', $queryParams)) {
+        if (!array_key_exists('video-id', $queryParams) && !array_key_exists('id', $queryParams)) {
             exit;
         }
 
-        $id = $queryParams['id'];
+        $id = $queryParams['video-id'] ?? $queryParams['id'];
         $this->redirectToThumbnail("https://vimeo.com/{$id}");
     }
 
