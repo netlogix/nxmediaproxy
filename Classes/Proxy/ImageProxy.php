@@ -75,6 +75,13 @@ class ImageProxy
             );
         }
 
+        // Cache 404 and redirect response for short amount of time to prevent DoS attacks
+        if (!empty($GLOBALS['TSFE']->config['config']['sendCacheHeaders'])) {
+            $response = $response->withHeader('Expires', gmdate('D, d M Y H:i:s T', $GLOBALS['EXEC_TIME'] + 60));
+            $response = $response->withHeader('Cache-Control', 'public, max-age=60');
+            $response = $response->withHeader('Pragma', 'public');
+        }
+
         throw new ImmediateResponseException($response, 1660655670);
     }
 
