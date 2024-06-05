@@ -2,9 +2,11 @@
 
 namespace Netlogix\Nxmediaproxy\Proxy;
 
+use Throwable;
 use TYPO3\CMS\Core\Http\ImmediateResponseException;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Resource\Exception\OnlineMediaAlreadyExistsException;
 use TYPO3\CMS\Core\Resource\OnlineMedia\Helpers\OnlineMediaHelperRegistry;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -58,7 +60,11 @@ class ImageProxy
 
         $helper = GeneralUtility::makeInstance(OnlineMediaHelperRegistry::class);
         try {
-            $file = $helper->transformUrlToFile($url, $folder);
+            try {
+                $file = $helper->transformUrlToFile($url, $folder);
+            } catch (OnlineMediaAlreadyExistsException $e) {
+                $file = $e->getOnlineMedia();
+            }
 
             $previewImage = GeneralUtility::makeInstance(ResourceFactory::class)->retrieveFileOrFolderObject(
                 $helper->getOnlineMediaHelper($file)->getPreviewImage($file)
@@ -68,7 +74,7 @@ class ImageProxy
                 'width' => '1120'
             ]);
             $response = new RedirectResponse($previewThumbnail->getPublicUrl());
-        } catch (\Error $error) {
+        } catch (Throwable) {
             $response = GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
                 $this->request,
                 'Video not found',
