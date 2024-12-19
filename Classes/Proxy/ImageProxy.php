@@ -1,7 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netlogix\Nxmediaproxy\Proxy;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Context\Context;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use TYPO3\CMS\Core\Http\ImmediateResponseException;
@@ -17,38 +21,39 @@ final readonly class ImageProxy
     public function __construct(
         private ResourceFactory $resourceFactory,
         private OnlineMediaHelperRegistry $helper,
-        private ErrorController $errorController,
+        private ErrorController $errorController
     ) {
     }
 
-    public function youtube(string $content, array $conf, ServerRequestInterface $request)
+    public function youtube(string $content, array $conf, ServerRequestInterface $request): void
     {
         $queryParams = $request->getQueryParams();
         if (!array_key_exists('video-id', $queryParams)) {
-            exit;
+            exit();
         }
 
         $id = $queryParams['video-id'];
-        $this->redirectToThumbnail("https://youtu.be/{$id}", $request);
+        $this->redirectToThumbnail('https://youtu.be/' . $id, $request);
     }
 
-    public function vimeo(string $content, array $conf, ServerRequestInterface $request)
+    public function vimeo(string $content, array $conf, ServerRequestInterface $request): void
     {
         $queryParams = $request->getQueryParams();
         if (!array_key_exists('video-id', $queryParams)) {
-            exit;
+            exit();
         }
 
         $id = $queryParams['video-id'];
-        $this->redirectToThumbnail("https://vimeo.com/{$id}", $request);
+        $this->redirectToThumbnail('https://vimeo.com/' . $id, $request);
     }
 
-    private function redirectToThumbnail(string $url, ServerRequestInterface $request)
+    private function redirectToThumbnail(string $url, ServerRequestInterface $request): void
     {
         $storage = $this->resourceFactory->getStorageObject(0);
         if (!$storage->hasFolder('typo3temp/assets/online_media_proxy')) {
             $storage->createFolder('typo3temp/assets/online_media_proxy');
         }
+
         $folder = $storage->getFolder('typo3temp/assets/online_media_proxy');
 
         try {
@@ -63,7 +68,7 @@ final readonly class ImageProxy
             );
 
             $previewThumbnail = $previewImage->process(ProcessedFile::CONTEXT_IMAGECROPSCALEMASK, [
-                'width' => '1120'
+                'width' => '1120',
             ]);
             $response = new RedirectResponse($previewThumbnail->getPublicUrl());
         } catch (Throwable) {
@@ -73,12 +78,18 @@ final readonly class ImageProxy
         // Cache 404 and redirect response for short amount of time to prevent DoS attacks
         if ($request->getAttribute('frontend.cache.instruction')->isCachingAllowed()) {
             $response = $response
-                ->withHeader('Expires', gmdate('D, d M Y H:i:s T', $GLOBALS['EXEC_TIME'] + 60))
+                ->withHeader(
+                    'Expires',
+                    gmdate(
+                        'D, d M Y H:i:s T',
+                        GeneralUtility::makeInstance(Context::class)->getPropertyFromAspect('date', 'timestamp') +
+                            60
+                    )
+                )
                 ->withHeader('Cache-Control', 'max-age=0, s-maxage=60')
                 ->withHeader('Pragma', 'public');
         }
 
         throw new ImmediateResponseException($response, 1660655670);
     }
-
 }
