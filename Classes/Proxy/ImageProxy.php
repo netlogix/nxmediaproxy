@@ -21,9 +21,8 @@ final readonly class ImageProxy
     public function __construct(
         private ResourceFactory $resourceFactory,
         private OnlineMediaHelperRegistry $helper,
-        private ErrorController $errorController
-    ) {
-    }
+        private ErrorController $errorController,
+    ) {}
 
     public function youtube(string $content, array $conf, ServerRequestInterface $request): void
     {
@@ -64,7 +63,7 @@ final readonly class ImageProxy
             }
 
             $previewImage = $this->resourceFactory->retrieveFileOrFolderObject(
-                $this->helper->getOnlineMediaHelper($file)->getPreviewImage($file)
+                $this->helper->getOnlineMediaHelper($file)->getPreviewImage($file),
             );
 
             $previewThumbnail = $previewImage->process(ProcessedFile::CONTEXT_IMAGECROPSCALEMASK, [
@@ -83,8 +82,8 @@ final readonly class ImageProxy
                     gmdate(
                         'D, d M Y H:i:s T',
                         GeneralUtility::makeInstance(Context::class)->getPropertyFromAspect('date', 'timestamp') +
-                            60
-                    )
+                            60,
+                    ),
                 )
                 ->withHeader('Cache-Control', 'max-age=0, s-maxage=60')
                 ->withHeader('Pragma', 'public');
